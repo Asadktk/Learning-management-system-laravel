@@ -18,9 +18,13 @@
                         class="{{ request()->routeIs('student.instructors.index') ? 'active' : '' }}">Trainers</a></li>
                 <li><a href="{{ route('students.contact') }}"
                         class="{{ request()->routeIs('students.contact') ? 'active' : '' }}">Contact Us</a></li>
-                <li><a href="{{ route('students.mycourses') }}"
-                        class="{{ request()->routeIs('students.mycourses') ? 'active' : '' }}">My Enroll Courses</a>
-                </li>
+
+                @auth
+                    <li><a href="{{ route('student.mycourses') }}"
+                            class="{{ request()->routeIs('student.mycourses') ? 'active' : '' }}">My Enroll Courses</a>
+                    </li>
+                @endauth
+
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>

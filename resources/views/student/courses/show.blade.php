@@ -66,7 +66,7 @@
 
                     <!-- enroll cta -->
                     {{-- {{ route('course.enroll', $course->id) }} --}}
-                    <a href="{{ route('courses.create', $course->id) }}"
+                    <a href="{{ route('student.courses.create', $course->id) }}"
                         style="background-color: #04AA6D; border: none; color: white; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; padding: 6px 18px; border-radius: 7px;">
                         Enroll
                     </a>

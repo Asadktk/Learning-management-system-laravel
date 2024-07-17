@@ -11,7 +11,7 @@
             <hr>
             {{-- @include('partials.messages') <!-- Include error messages --> --}}
            
-            <x-forms.form method="POST" action="instructor.period.store">                
+            <x-forms.form method="POST" action="instructor.periods.store">                
 
                 <x-forms.select-course :courses="$courses" name="course_id" />
 

@@ -50,8 +50,8 @@ class StudentController extends Controller
             $student = Student::withTrashed()->findOrFail($id);
             $user = User::withTrashed()->findOrFail($student->user_id);
 
-            $student->forceDelete(); // Perform a hard delete
-            $user->forceDelete(); // Perform a hard delete on the user
+            $student->forceDelete();
+            $user->forceDelete(); 
 
             return response()->json(['message' => 'student and user deleted successfully']);
         } catch (\Exception $e) {

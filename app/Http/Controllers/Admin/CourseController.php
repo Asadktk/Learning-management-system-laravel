@@ -69,7 +69,7 @@ class CourseController extends Controller
                 }
             }
 
-            return redirect()->route('display')->with('success', 'Course created successfully.');
+            return redirect()->route('admin.courses.display')->with('success', 'Course created successfully.');
         } else {
             return back()->withErrors('Failed to create course.');
         }
@@ -100,7 +100,6 @@ class CourseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validate request data
         $attributes = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -111,15 +110,12 @@ class CourseController extends Controller
             // Add validation for instructor_ids if needed
         ]);
 
-        // Find the course to update
         $course = Course::withTrashed()->findOrFail($id);
 
-        // Update the course attributes
         $course->update($attributes);
 
     
-        // Redirect with success message
-        return redirect()->route('display')->with('success', 'Course updated successfully.');
+        return redirect()->route('admin.courses.display')->with('success', 'Course updated successfully.');
     }
 
 
@@ -130,7 +126,7 @@ class CourseController extends Controller
     {
         try {
             $course = Course::findOrFail($id);
-            $course->forceDelete(); // Perform a hard delete
+            $course->forceDelete(); 
             return response()->json(['message' => 'Course deleted successfully']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Course deletion failed: ' . $e->getMessage()], 500);

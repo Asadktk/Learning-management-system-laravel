@@ -58,7 +58,7 @@ class CourseController extends Controller
 
         // Validate the request data
         $data = $request->validate([
-            'instructor_id' => 'required|exists:instructors,id', // Ensure instructor exists
+            'instructor_id' => 'required|exists:instructors,id', 
         ]);
 
         // Fetch all instructor courses for the current course
@@ -79,7 +79,6 @@ class CourseController extends Controller
             ->where('instructor_id', $data['instructor_id'])
             ->firstOrFail();
 
-        // Create enrollment record
         Enrollment::create([
             'instructor_course_id' => $instructorCourse->id,
             'student_id' => $student->id,

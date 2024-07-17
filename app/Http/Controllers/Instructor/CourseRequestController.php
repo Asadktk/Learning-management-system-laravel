@@ -20,7 +20,6 @@ class CourseRequestController extends Controller
 
         $excludedCourseIds = array_unique(array_merge($assignedCourseIds, $requestedCourseIds));
 
-        // Query courses that are not in the list of excluded IDs
         $courses = Course::whereNotIn('id', $excludedCourseIds)->get();
 
         return DataTables::of($courses)->make(true);

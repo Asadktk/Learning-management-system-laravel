@@ -50,7 +50,7 @@
                         @endif
                     </div>
                     {{-- {{ url('/course-enroll/' . $course->id) }} --}}
-                    <form action="{{ route('courses.store', $course->id) }}" method="post">
+                    <form action="{{ route('student.courses.store', $course->id) }}" method="post">
                         @csrf
                         <div class="form-group">
                             <label for="instructor_id">Trainer</label>

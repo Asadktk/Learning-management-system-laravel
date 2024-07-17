@@ -39,11 +39,18 @@
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         }
                     },
-                    columns: [
-                        { data: 'id', name: 'id' },
-                        { data: 'name', name: 'name' },
-                        { data: 'email', name: 'email' },
-                        // { data: 'courses', name: 'courses' },
+                    columns: [{
+                            data: 'id',
+                            name: 'id'
+                        },
+                        {
+                            data: 'name',
+                            name: 'name'
+                        },
+                        {
+                            data: 'email',
+                            name: 'email'
+                        },
                         {
                             data: 'id',
                             name: 'action',
@@ -54,10 +61,10 @@
                                 var blockButton = full.deleted_at ? 'Unblock' : 'Block';
                                 var blockClass = full.deleted_at ? 'unblock-student' : 'block-student';
                                 return `
-                                    <a href="${showUrl}" class="btn btn-info btn-sm">View</a>
-                                    <button data-id="${full.id}" class="btn btn-danger btn-sm ${blockClass}">${blockButton}</button>
-                                    <button data-id="${full.id}" class="btn btn-warning btn-sm delete-student">Delete</button>
-                                `;
+                        <a href="${showUrl}" class="btn btn-info btn-sm">View</a>
+                        <button data-id="${full.id}" class="btn btn-danger btn-sm ${blockClass}">${blockButton}</button>
+                        <button data-id="${full.id}" class="btn btn-warning btn-sm delete-student">Delete</button>
+                    `;
                             }
                         }
                     ]

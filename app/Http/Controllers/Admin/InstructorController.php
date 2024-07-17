@@ -40,8 +40,8 @@ class InstructorController extends Controller
     public function show(string $id)
     {
         $instructor = Instructor::with(['user', 'courses'])
-            ->withTrashed() // Include soft deleted records
-            ->findOrFail($id); // Get a single instructor
+            ->withTrashed() 
+            ->findOrFail($id); 
 
         return view('admin.instructors.show', compact('instructor'));
     }
@@ -54,8 +54,8 @@ class InstructorController extends Controller
             $instructor = Instructor::withTrashed()->findOrFail($id);
             $user = User::withTrashed()->findOrFail($instructor->user_id);
 
-            $instructor->forceDelete(); // Perform a hard delete
-            $user->forceDelete(); // Perform a hard delete on the user
+            $instructor->forceDelete(); 
+            $user->forceDelete(); 
 
             return response()->json(['message' => 'Instructor and user deleted successfully']);
         } catch (\Exception $e) {

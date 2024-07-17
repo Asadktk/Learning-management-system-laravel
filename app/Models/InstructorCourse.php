@@ -14,14 +14,6 @@ class InstructorCourse extends Model
 {
     use HasFactory;
 
-    // protected $table = 'instructor_courses';
-    // protected $primaryKey = 'id';
-
-    // protected $fillable = [
-    //     'instructor_id',
-    //     'course_id',
-    // ];
-
     public function instructor(): BelongsTo
     {
         return $this->belongsTo(Instructor::class);
