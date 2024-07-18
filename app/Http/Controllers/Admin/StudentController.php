@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\User;
 use App\Models\Student;
 use Illuminate\View\View;
 use Yajra\DataTables\DataTables;
@@ -18,12 +17,6 @@ class StudentController extends Controller
             ->get();
 
         return DataTables::of($students)
-            ->addColumn('name', function ($student) {
-                return $student->user->name;
-            })
-            ->addColumn('email', function ($student) {
-                return $student->user->email;
-            })
             ->make(true);
     }
 
@@ -48,10 +41,9 @@ class StudentController extends Controller
     {
         try {
             $student = Student::withTrashed()->findOrFail($id);
-            $user = User::withTrashed()->findOrFail($student->user_id);
 
             $student->forceDelete();
-            $user->forceDelete(); 
+            $student->user()->forceDelete();
 
             return response()->json(['message' => 'student and user deleted successfully']);
         } catch (\Exception $e) {

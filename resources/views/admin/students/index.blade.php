@@ -44,12 +44,10 @@
                             name: 'id'
                         },
                         {
-                            data: 'name',
-                            name: 'name'
+                            data: 'user.name', name: 'user.name' 
                         },
                         {
-                            data: 'email',
-                            name: 'email'
+                           data: 'user.email', name: 'user.email'
                         },
                         {
                             data: 'id',
@@ -94,7 +92,7 @@
                     var studentId = $(this).data('id');
                     if (confirm('Are you sure you want to delete this student?')) {
                         $.ajax({
-                            url: '/admin/students/' + studentId,
+                            url: '/admin/students/destroy/' + studentId,
                             type: 'DELETE',
                             data: {
                                 _token: '{{ csrf_token() }}',

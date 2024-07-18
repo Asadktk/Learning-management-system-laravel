@@ -13,7 +13,7 @@
                                     <th>Id</th>
                                     <th>Name</th>
                                     <th>Email</th>
-                                    <th>Courses</th>
+                                    {{-- <th>Courses</th> --}}
                                     <th>Operation</th>
                                 </tr>
                             </thead>
@@ -41,9 +41,9 @@
                     },
                     columns: [
                         { data: 'id', name: 'id' },
-                        { data: 'name', name: 'name' },
-                        { data: 'email', name: 'email' },
-                        { data: 'courses', name: 'courses' },
+                        { data: 'user.name', name: 'user.name' },
+                        { data: 'user.email', name: 'user.email' },
+                        // { data: 'courses', name: 'courses' },
                         {
                             data: 'id',
                             name: 'action',
@@ -87,7 +87,7 @@
                     var instructorId = $(this).data('id');
                     if (confirm('Are you sure you want to delete this instructor?')) {
                         $.ajax({
-                            url: '/admin/instructors/' + instructorId,
+                            url: '/admin/instructors/destroy/' + instructorId,
                             type: 'DELETE',
                             data: {
                                 _token: '{{ csrf_token() }}',

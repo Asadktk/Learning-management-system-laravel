@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers\Instructor;
 
-use Carbon\Carbon;
-use App\Models\Course;
 use App\Models\Period;
 use Illuminate\View\View;
-use App\Models\Instructor;
-use Illuminate\Http\Request;
+use App\Services\PeriodService;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+use App\Http\Requests\StorePeriodRequest;
 
 class PeriodController extends Controller
 {
+    protected $periodService;
+
+    public function __construct(PeriodService $periodService)
+    {
+        $this->periodService = $periodService;
+    }
+
     public function index(): JsonResponse
     {
-        $instructor = Instructor::where('user_id', Auth::id())->firstOrFail();
-
-
-        $periods = Period::with('course')
-            ->where('instructor_id', $instructor->id)
-            ->get();
+        $instructor = $this->periodService->getInstructor(Auth::id());
+        $periods = $this->periodService->getPeriodsWithCourses($instructor->id);
 
         return DataTables::of($periods)->make(true);
     }
@@ -34,48 +34,26 @@ class PeriodController extends Controller
         return view('instructor.classes.index');
     }
 
+
     public function create()
     {
-        $instructor = Instructor::where('user_id', Auth::id())->firstOrFail();
+        $instructor = $this->periodService->getInstructor(Auth::id());
+        $courses = $this->periodService->getCourses($instructor->id);
 
-        $courses = $instructor->courses;
-        return view('instructor.classes.create', with([
+        return view('instructor.classes.create', [
             'courses' => $courses,
-        ]));
+        ]);
     }
 
-    public function store(Request $request)
+    public function store(StorePeriodRequest $request)
     {
-        $period = $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
-        ]);
+        $periodData = $request->validated();
 
-        $instructor = Instructor::where('user_id', Auth::id())->firstOrFail();
+        $instructor = $this->periodService->getInstructor(Auth::id());
 
-        $startTime = Carbon::parse($period['start_time']);
-        $endTime = Carbon::parse($period['end_time']);
+        $this->periodService->checkForOverlappingPeriods($instructor->id, $periodData['start_time'], $periodData['end_time']);
 
-        $overlappingPeriods = Period::where('instructor_id', $instructor->id)
-            ->where(function ($query) use ($startTime, $endTime) {
-                $query->whereBetween('start_time', [$startTime, $endTime])
-                    ->orWhereBetween('end_time', [$startTime, $endTime])
-                    ->orWhere(function ($query) use ($startTime, $endTime) {
-                        $query->where('start_time', '<=', $startTime)
-                            ->where('end_time', '>=', $endTime);
-                    });
-            })
-            ->exists();
-
-        if ($overlappingPeriods) {
-            throw ValidationException::withMessages([
-                'start_time' => 'This time overlaps with an existing period.',
-            ]);
-        }
-
-        $period['instructor_id'] = $instructor->id;
-        Period::create($period);
+        $this->periodService->createPeriod($periodData, $instructor->id);
 
         return redirect()->route('instructor.periods.display')->with('success', 'Period created successfully.');
     }
@@ -91,9 +69,9 @@ class PeriodController extends Controller
 
     public function edit($id)
     {
-        $instructor = Instructor::where('user_id', Auth::id())->firstOrFail();
+        $instructor = $this->periodService->getInstructor(Auth::id());
         $period = Period::findOrFail($id);
-        $courses = $instructor->courses;
+        $courses = $this->periodService->getCourses($instructor->id);
 
         return view('instructor.classes.edit', [
             'period' => $period,
@@ -101,46 +79,17 @@ class PeriodController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(StorePeriodRequest $request, $id)
     {
         $period = Period::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
-        ]);
+        $validatedData = $request->validated();
 
-        $instructor = Instructor::where('id', $period->instructor_id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        $instructor = $this->periodService->getInstructor(Auth::id());
 
-        $startTime = Carbon::parse($validatedData['start_time']);
-        $endTime = Carbon::parse($validatedData['end_time']);
+        $this->periodService->checkForOverlappingPeriods($instructor->id, $validatedData['start_time'], $validatedData['end_time'], $id);
 
-        $overlappingPeriods = Period::where('instructor_id', $instructor->id)
-            ->where('id', '!=', $id)
-            ->where(function ($query) use ($startTime, $endTime) {
-                $query->whereBetween('start_time', [$startTime, $endTime])
-                    ->orWhereBetween('end_time', [$startTime, $endTime])
-                    ->orWhere(function ($query) use ($startTime, $endTime) {
-                        $query->where('start_time', '<=', $startTime)
-                            ->where('end_time', '>=', $endTime);
-                    });
-            })
-            ->exists();
-
-        if ($overlappingPeriods) {
-            throw ValidationException::withMessages([
-                'start_time' => 'This time overlaps with an existing period.',
-            ]);
-        }
-
-        $period->update([
-            'course_id' => $validatedData['course_id'],
-            'start_time' => $validatedData['start_time'],
-            'end_time' => $validatedData['end_time'],
-        ]);
+        $this->periodService->updatePeriod($validatedData, $period);
 
         return redirect()->route('instructor.periods.display')->with('success', 'Period updated successfully.');
     }

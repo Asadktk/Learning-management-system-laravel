@@ -18,11 +18,11 @@
                         <div class="overview__inner">
                             <div class="overview-box clearfix">
                                 <div class="icon">
-                                    <i class="zmdi zmdi-account-o"></i>
+                                    <i class="zmdi zmdi-account"></i>
                                 </div>
                                 <div class="text">
-                                    <h2>10368</h2>
-                                    <span>members online</span>
+                                    <h2>{{ $trainerCount }}</h2>
+                                    <span>Total Trainers</span>
                                 </div>
                             </div>
                             <div class="overview-chart">
@@ -36,11 +36,11 @@
                         <div class="overview__inner">
                             <div class="overview-box clearfix">
                                 <div class="icon">
-                                    <i class="zmdi zmdi-shopping-cart"></i>
+                                    <i class="zmdi zmdi-account"></i>
                                 </div>
                                 <div class="text">
-                                    <h2>388,688</h2>
-                                    <span>items solid</span>
+                                    <h2>{{ $studentCount }}</h2>
+                                    <span>Total Students</span>
                                 </div>
                             </div>
                             <div class="overview-chart">
@@ -57,8 +57,8 @@
                                     <i class="zmdi zmdi-calendar-note"></i>
                                 </div>
                                 <div class="text">
-                                    <h2>1,086</h2>
-                                    <span>this week</span>
+                                    <h2>{{ $eventCount }}</h2>
+                                    <span>Total Classes</span>
                                 </div>
                             </div>
                             <div class="overview-chart">
@@ -72,15 +72,14 @@
                         <div class="overview__inner">
                             <div class="overview-box clearfix">
                                 <div class="icon">
-                                    <i class="zmdi zmdi-money"></i>
+                                    <i class="zmdi zmdi-book"></i>
                                 </div>
                                 <div class="text">
-                                    <h2>$1,060,386</h2>
-                                    <span>total earnings</span>
+                                    <h2>{{ $courseCount }}</h2>
+                                    <span>Total Courses</span>
                                 </div>
                             </div>
                             <div class="overview-chart">
                                 <canvas id="widgetChart4"></canvas>
                             </div>
-                        
-@endsection
+                        @endsection

@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\User;
 use Illuminate\View\View;
 use App\Models\Instructor;
-use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -19,15 +17,9 @@ class InstructorController extends Controller
             ->get();
 
         return DataTables::of($instructors)
-            ->addColumn('name', function ($instructor) {
-                return $instructor->user->name;
-            })
-            ->addColumn('email', function ($instructor) {
-                return $instructor->user->email;
-            })
-            ->addColumn('courses', function ($instructor) {
-                return $instructor->courses->pluck('title')->implode(', ');
-            })
+            // ->addColumn('courses', function ($instructor) {
+            //     return $instructor->courses->pluck('title')->implode(', ');
+            // })
             ->make(true);
     }
 
@@ -40,8 +32,8 @@ class InstructorController extends Controller
     public function show(string $id)
     {
         $instructor = Instructor::with(['user', 'courses'])
-            ->withTrashed() 
-            ->findOrFail($id); 
+            ->withTrashed()
+            ->findOrFail($id);
 
         return view('admin.instructors.show', compact('instructor'));
     }
@@ -52,10 +44,9 @@ class InstructorController extends Controller
     {
         try {
             $instructor = Instructor::withTrashed()->findOrFail($id);
-            $user = User::withTrashed()->findOrFail($instructor->user_id);
 
-            $instructor->forceDelete(); 
-            $user->forceDelete(); 
+            $instructor->forceDelete();
+            $instructor->user()->forceDelete();
 
             return response()->json(['message' => 'Instructor and user deleted successfully']);
         } catch (\Exception $e) {

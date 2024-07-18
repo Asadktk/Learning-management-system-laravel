@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\View\View;
-use App\Models\InstructorCourse;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\Request as RequestModel; // Alias the model
-use Illuminate\Http\Request as HttpRequest; // Alias the HTTP request
+use App\Models\Request as RequestModel;
+use Illuminate\Http\Request as HttpRequest; 
 
 class InstructorRequestController extends Controller
 {
@@ -43,27 +41,14 @@ class InstructorRequestController extends Controller
         return view('admin.requests.index');
     }
 
-    public function accept($id)
+    public function accept($id): JsonResponse
     {
         try {
-            DB::beginTransaction();
-
             $requestRecord = RequestModel::findOrFail($id);
-            $instructorId = $requestRecord->instructor_id;
-            $courseId = $requestRecord->course_id;
-
-            InstructorCourse::create([
-                'instructor_id' => $instructorId,
-                'course_id' => $courseId,
-            ]);
-
-            $requestRecord->delete();
-
-            DB::commit();
+            $requestRecord->assignCourseToInstructor();
 
             return response()->json(['status' => 'Request accepted and instructor assigned to course successfully.']);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json(['error' => 'Failed to accept request: ' . $e->getMessage()], 500);
         }
     }

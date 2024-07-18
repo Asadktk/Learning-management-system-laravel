@@ -3,16 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Course;
+use Illuminate\View\View;
 use App\Models\Instructor;
 use Illuminate\Http\Request;
+use App\Traits\InstructorTrait;
+use App\Traits\ValidationTrait;
 use App\Models\InstructorCourse;
-use App\Http\Controllers\Controller;
+use App\Traits\AttachmentsTrait;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\JsonResponse;
-use Illuminate\View\View;
+use App\Http\Controllers\Controller;
 
 class CourseController extends Controller
 {
+    use ValidationTrait, InstructorTrait, AttachmentsTrait;
+
     /**
      * Display a listing of the resource.
      */
@@ -34,7 +39,7 @@ class CourseController extends Controller
      */
     public function create()
     {
-        $instructors = Instructor::with('user')->get();
+        $instructors = $this->getInstructors();
         return view(
             'admin.courses.create',
             [
@@ -48,32 +53,17 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        $attributes =  $request->validate([
-            'title' => 'required|string|max:255|unique:courses,title,',
-            'description' => 'required|string',
-            'fee' => 'required|numeric',
-            'available_seat' => 'required|integer',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-        ]);
+        $attributes = $this->validateCourse($request);
 
         $course = Course::create($attributes);
+       
+        $this->attachInstructors($course, $request->instructor_ids);
 
-        if ($course) {
-            if ($request->has('instructor_ids')) {
-                foreach ($request->instructor_ids as $instructor_id) {
-                    InstructorCourse::create([
-                        'instructor_id' => $instructor_id,
-                        'course_id' => $course->id,
-                    ]);
-                }
-            }
-
-            return redirect()->route('admin.courses.display')->with('success', 'Course created successfully.');
-        } else {
-            return back()->withErrors('Failed to create course.');
-        }
+        return $course
+            ? redirect()->route('admin.courses.display')->with('success', 'Course created successfully.')
+            : back()->withErrors('Failed to create course.');
     }
+
 
     /**
      * Display the specified resource.
@@ -90,8 +80,7 @@ class CourseController extends Controller
     public function edit(string $id)
     {
         $course = Course::with(['instructors'])->withTrashed()->findOrFail($id);
-        $instructors = Instructor::with('user')->get();
-
+        $instructors = $this->getInstructors();
         return view('admin.courses.edit', compact('course', 'instructors'));
     }
 
@@ -100,21 +89,13 @@ class CourseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $attributes = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'fee' => 'required|numeric',
-            'available_seat' => 'required|integer',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
-            // Add validation for instructor_ids if needed
-        ]);
+        $attributes = $this->validateCourse($request, $id);
 
         $course = Course::withTrashed()->findOrFail($id);
 
         $course->update($attributes);
 
-    
+
         return redirect()->route('admin.courses.display')->with('success', 'Course updated successfully.');
     }
 
@@ -126,7 +107,7 @@ class CourseController extends Controller
     {
         try {
             $course = Course::findOrFail($id);
-            $course->forceDelete(); 
+            $course->forceDelete();
             return response()->json(['message' => 'Course deleted successfully']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Course deletion failed: ' . $e->getMessage()], 500);

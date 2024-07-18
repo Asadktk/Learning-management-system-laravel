@@ -28,10 +28,8 @@ class SessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Get the authenticated user
         $user = Auth::user();
 
-        // Check the user's role and redirect accordingly
         switch ($user->role->role) {
             case 'admin':
                 return redirect('/admin/dashboard');
