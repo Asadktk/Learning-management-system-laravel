@@ -6,6 +6,7 @@ use App\Http\Controllers\Student\CourseController as StudentCourseController;
 
 Route::middleware(['role:student'])->group(function () {
     Route::prefix('students')->name('student.')->group(function () {
+        
         Route::get('/instructors', [HomeController::class, 'instructors'])->name('instructors.index');
         
         Route::get('/mycourses', [StudentCourseController::class, 'mycourses'])->name('mycourses');

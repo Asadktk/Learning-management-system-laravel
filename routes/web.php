@@ -11,7 +11,7 @@ Route::view('/contact', 'student.contact')->name('students.contact');
 Route::get('/', [HomeController::class, 'index'])->name('student.home');
 
 Route::middleware('guest')->group(function () {
-    Route::get('/register', [RegisterController::class, 'create']);
+    Route::get('/register', [RegisterController::class, 'create'])->name('register');
     Route::post('/register', [RegisterController::class, 'store']);
 
     Route::get('/login', [SessionController::class, 'create'])->name('login');

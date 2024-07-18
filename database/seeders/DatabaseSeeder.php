@@ -26,14 +26,17 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        // $adminRole = Role::create(['role' => 'admin']);
-        // $instructorRole = Role::create(['role' => 'instructor']);
-        // $studentRole = Role::create(['role' => 'student']);
+        $adminRole = Role::create(['role' => 'admin']);
+        $instructorRole = Role::create(['role' => 'instructor']);
+        $studentRole = Role::create(['role' => 'student']);
 
-        // // Create users and associate them with the roles
-        // User::factory()->count(1)->create(['role_id' => $adminRole->id]);
-        // User::factory()->count(5)->create(['role_id' => $instructorRole->id]);
-        // User::factory()->count(10)->create(['role_id' => $studentRole->id]);
+        $adminUser = User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@admin.com',
+            'role_id' => $adminRole->id,
+        ]);
+        User::factory()->count(5)->create(['role_id' => $instructorRole->id]);
+        User::factory()->count(10)->create(['role_id' => $studentRole->id]);
         
         Student::factory()->count(10)->create();
         Instructor::factory()->count(5)->create();
