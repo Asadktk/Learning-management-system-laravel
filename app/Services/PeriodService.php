@@ -61,5 +61,7 @@ class PeriodService
         return Period::with('course')
             ->where('instructor_id', $instructorId)
             ->get();
+
+            
     }
 }

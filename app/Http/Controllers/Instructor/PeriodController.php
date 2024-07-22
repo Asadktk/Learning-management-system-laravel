@@ -24,7 +24,6 @@ class PeriodController extends Controller
     {
         $instructor = $this->periodService->getInstructor(Auth::id());
         $periods = $this->periodService->getPeriodsWithCourses($instructor->id);
-
         return DataTables::of($periods)->make(true);
     }
 

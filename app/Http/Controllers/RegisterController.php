@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Mail\OtpVerificationMail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
@@ -28,20 +30,27 @@ class RegisterController extends Controller
             'name' => ['required'],
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', Password::min(6)],
-            'role_id' => ['required', 'exists:roles,id','in:2,3'],
+            'role_id' => ['required', 'exists:roles,id', 'in:2,3'],
         ]);
+
+        $otp = rand(100000, 999999);
+
+        // Add OTP to user attributes
+        $userAttributes['otp'] = $otp;
 
         $user = User::create($userAttributes);
 
-        if ($user->role_id == 2) { 
+        if ($user->role_id == 2) {
             $user->instructor()->create();
-        } elseif ($user->role_id == 3) { 
+        } elseif ($user->role_id == 3) {
             $user->student()->create();
         }
 
-        Auth::login($user);
+        Mail::to($user->email)->send(new OtpVerificationMail($otp));
         
-        return redirect($user->role_id == 2 ? '/instructor/dashboard' : '/');
+        Auth::login($user);
 
+        return redirect()->route('otp.verify.show');
+        // return redirect($user->role_id == 2 ? '/instructor/dashboard' : '/');
     }
 }

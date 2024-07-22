@@ -42,20 +42,14 @@
                             defaultContent: 'No Course'
                         },
                         {
-                            data: 'start_time',
+                            data: 'start_time_formatted',
                             name: 'start_time',
-                            title: 'Start Time',
-                            render: function(data, type, full, meta) {
-                                return new Date(data).toLocaleString();
-                            }
+                            title: 'Start Time'
                         },
                         {
-                            data: 'end_time',
+                            data: 'end_time_formatted',
                             name: 'end_time',
-                            title: 'End Time',
-                            render: function(data, type, full, meta) {
-                                return new Date(data).toLocaleString();
-                            }
+                            title: 'End Time'
                         },
                         {
                             data: 'id',
@@ -80,7 +74,7 @@
                     var periodId = $(this).data('id');
                     if (confirm('Are you sure you want to delete this period?')) {
                         $.ajax({
-                            url: '/instructors/periods/' + periodId,
+                            url: '/instructor/periods/' + periodId,
                             type: 'DELETE',
                             data: {
                                 _token: '{{ csrf_token() }}',
