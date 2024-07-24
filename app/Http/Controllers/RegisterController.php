@@ -49,6 +49,8 @@ class RegisterController extends Controller
         Mail::to($user->email)->send(new OtpVerificationMail($otp));
         
         Auth::login($user);
+        
+       $request->session()->flash('message', 'OTP has been sent to your email. Please check your email.');
 
         return redirect()->route('otp.verify.show');
         // return redirect($user->role_id == 2 ? '/instructor/dashboard' : '/');

@@ -31,12 +31,6 @@ class User extends Authenticatable
         'password',
     ];
 
-    // protected function Email() : Attribute {
-    //     return Attribute::make(
-    //         set:fn(string $value)=>strtolower($value),
-    //     );
-    // }
-
     public function setEmailAttribute($value){
         $this->attributes['email'] = strtolower($value);
     }

@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Course;
+use App\Models\Request;
 use Illuminate\View\View;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Jobs\SendAdminDecisionEmail;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InstructorRequestStatus;
 use App\Models\Request as RequestModel;
-use Illuminate\Http\Request as HttpRequest; 
+use Illuminate\Http\Request as HttpRequest;
 
 class InstructorRequestController extends Controller
 {
@@ -44,8 +49,13 @@ class InstructorRequestController extends Controller
     public function accept($id): JsonResponse
     {
         try {
-            $requestRecord = RequestModel::findOrFail($id);
+            $requestRecord = Request::findOrFail($id);
             $requestRecord->assignCourseToInstructor();
+
+            $course = Course::find($requestRecord->course_id);
+            // Mail::to($requestRecord->instructor->user->email)->send(new InstructorRequestStatus($requestRecord->instructor->user, $course, 'accepted'));
+            SendAdminDecisionEmail::dispatch($requestRecord->instructor->user, $course, 'accepted');
+
 
             return response()->json(['status' => 'Request accepted and instructor assigned to course successfully.']);
         } catch (\Exception $e) {
@@ -59,6 +69,12 @@ class InstructorRequestController extends Controller
         if ($request) {
             $request->status = 'reject';
             $request->save();
+
+            $course = Course::find($request->course_id);
+            SendAdminDecisionEmail::dispatch($request->instructor->user, $course, 'rejected');
+
+            // Send email to instructor
+            // Mail::to($request->instructor->user->email)->send(new InstructorRequestStatus($request->instructor->user, $course, 'rejected'));
         }
         return response()->json(['status' => 'success']);
     }

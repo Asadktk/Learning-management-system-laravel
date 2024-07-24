@@ -8,14 +8,22 @@
                     <div class="card-header">{{ __('Verify OTP') }}</div>
 
                     <div class="card-body">
+                        @if (session('message'))
+                            <div class="alert alert-success" role="alert">
+                                {{ session('message') }}
+                            </div>
+                        @endif
                         <form method="POST" action="{{ route('otp.verify') }}">
                             @csrf
 
                             <div class="form-group row">
-                                <label for="otp" class="col-md-4 col-form-label text-md-right">{{ __('OTP') }}</label>
+                                <label for="otp"
+                                    class="col-md-4 col-form-label text-md-right">{{ __('OTP') }}</label>
 
                                 <div class="col-md-6">
-                                    <input id="otp" type="text" class="form-control @error('otp') is-invalid @enderror" name="otp" required autofocus>
+                                    <input id="otp" type="text"
+                                        class="form-control @error('otp') is-invalid @enderror" name="otp" required
+                                        autofocus>
 
                                     @error('otp')
                                         <span class="invalid-feedback" role="alert">

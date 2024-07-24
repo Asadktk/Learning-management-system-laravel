@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Instructor;
 
+use App\Models\User;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
+use App\Mail\InstructorSendRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendInstructorRequestEmail;
 
 class CourseRequestController extends Controller
 {
@@ -24,14 +28,15 @@ class CourseRequestController extends Controller
         return DataTables::of($courses)->make(true);
     }
 
-    public function display(){
+    public function display()
+    {
 
         return view('instructor.requests.create');
     }
 
     public function store(Request $request)
     {
-       $data = $request->validate([
+        $data = $request->validate([
             'course_id' => 'required|exists:courses,id',
         ]);
 
@@ -43,6 +48,12 @@ class CourseRequestController extends Controller
         }
 
         $instructor->courseRequests()->create($data);
+
+        $course = Course::find($data['course_id']);
+
+        $admin = User::where('role_id', 1)->first(); 
+        // Mail::to($admin->email)->send(new InstructorSendRequest($admin, $instructor->user, $course));
+        SendInstructorRequestEmail::dispatch($admin, $instructor->user, $course);
 
         return redirect()->back()->with('success', 'Request sent successfully.');
     }

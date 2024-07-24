@@ -30,6 +30,5 @@ Route::middleware('auth')->group(function () {
     Route::get('verify-otp', [VerificationController::class, 'showVerifyForm'])->name('otp.verify.show');
     Route::post('verify-otp', [VerificationController::class, 'verifyOtp'])->name('otp.verify');
 
-
     Route::delete('/logout', [SessionController::class, 'destroy'])->name('logout');
 });
