@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Role extends Model
 {
+    const ROLE_ADMIN = 'admin';
+    const ROLE_INSTRUCTOR = 'instructor';
+    const ROLE_STUDENT = 'student';
+
     use HasFactory;
 
     public function user()

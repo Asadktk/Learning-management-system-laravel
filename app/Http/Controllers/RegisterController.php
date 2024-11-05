@@ -40,9 +40,9 @@ class RegisterController extends Controller
 
         $user = User::create($userAttributes);
 
-        if ($user->role_id == 2) {
+        if ($user->role === Role::ROLE_INSTRUCTOR) {
             $user->instructor()->create();
-        } elseif ($user->role_id == 3) {
+        } elseif ($user->role_id === Role::ROLE_STUDENT) {
             $user->student()->create();
         }
 
